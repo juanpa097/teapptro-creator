@@ -3,7 +3,8 @@
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import Image from 'next/image'
 import { useState } from 'react';
-import { firestore } from '../services/FirebaseService';
+import { firestore, storage } from '../services/FirebaseService';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default function CreateEvent() {
 
@@ -12,6 +13,22 @@ export default function CreateEvent() {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [address, setAddress] = useState('');
+  const [picture, setPicture] = useState<File | null>(null);
+  const [pictureUrl, setPictureUrl] = useState<string | null>(null);
+
+  const handlePictureUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      // Upload the picture to Firebase Storage
+      const storageRef = ref(storage, `pictures/${file.name}`);
+      await uploadBytes(storageRef, file);
+
+      // Get the download URL of the uploaded picture
+      const downloadURL = await getDownloadURL(storageRef);
+      setPictureUrl(downloadURL);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -23,14 +40,16 @@ export default function CreateEvent() {
       description,
       date,
       address,
+      pictureUrl,
     });
 
     const event = {
       'name': name,
-      'location': location,
+      'location_name': location,
       'description': description,
       'date': Timestamp.fromDate(new Date(date)),
       'address': address,
+      'image_url': pictureUrl,
     }
 
     try {
@@ -45,6 +64,8 @@ export default function CreateEvent() {
     setDescription('');
     setDate('');
     setAddress('');
+    setPicture(null);
+    setPictureUrl(null);
   };
 
   return (
@@ -93,6 +114,17 @@ export default function CreateEvent() {
             onChange={(e) => setAddress(e.target.value)}
           />
         </label>
+        <br />
+        <label>
+          Picture:
+          <input type="file" onChange={handlePictureUpload} />
+        </label>
+        <br />
+        {pictureUrl && (
+          <div>
+            <img src={pictureUrl} alt="Uploaded" />
+          </div>
+        )}
         <br />
         <button type="submit">Create Event</button>
       </form>
