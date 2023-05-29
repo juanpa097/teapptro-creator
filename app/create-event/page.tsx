@@ -1,7 +1,9 @@
 "use client";
 
+import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import Image from 'next/image'
 import { useState } from 'react';
+import { firestore } from '../services/FirebaseService';
 
 export default function CreateEvent() {
 
@@ -11,7 +13,7 @@ export default function CreateEvent() {
   const [date, setDate] = useState('');
   const [address, setAddress] = useState('');
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // You can perform any necessary form submission logic here
     // For example, sending the data to a server or updating the state
@@ -22,6 +24,21 @@ export default function CreateEvent() {
       date,
       address,
     });
+
+    const event = {
+      'name': name,
+      'location': location,
+      'description': description,
+      'date': Timestamp.fromDate(new Date(date)),
+      'address': address,
+    }
+
+    try {
+      await addDoc(collection(firestore, 'events'), event);
+    } catch (e: any) {
+      console.log(e);
+    }
+
     // Reset form fields
     setName('');
     setLocation('');
