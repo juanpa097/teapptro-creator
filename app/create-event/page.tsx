@@ -122,7 +122,7 @@ export default function CreateEvent() {
         <br />
         {pictureUrl && (
           <div>
-            <img src={pictureUrl} alt="Uploaded" />
+            <Image src={pictureUrl} alt="Uploaded" />
           </div>
         )}
         <br />
