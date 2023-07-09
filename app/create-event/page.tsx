@@ -14,7 +14,7 @@ import {
   message,
   Upload,
 } from 'antd'
-import type { UploadFile } from 'antd/es/upload/interface'
+import type { UploadChangeParam, UploadFile } from 'antd/es/upload/interface'
 import type { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface'
 import type { Dayjs } from 'dayjs'
 const { Content } = Layout
@@ -84,6 +84,9 @@ export default function CreateEvent() {
     }
   }
 
+  const getFileList = (e: UploadChangeParam<UploadFile>) =>
+    Array.isArray(e) ? e : e?.fileList
+
   return (
     <Layout>
       <Content className="flex flex-col items-center justify-center h-screen">
@@ -130,6 +133,7 @@ export default function CreateEvent() {
               label="Upload picture"
               name="files"
               valuePropName="fileList"
+              getValueFromEvent={getFileList}
             >
               <Upload customRequest={customUpload} listType="picture-card">
                 <div>
