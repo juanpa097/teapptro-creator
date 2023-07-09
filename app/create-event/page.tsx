@@ -75,15 +75,11 @@ export default function CreateEvent() {
   const customUpload = async (options: RcCustomRequestOptions) => {
     const file = options.file as File
     const storageRef = ref(storage, `pictures/${file.name}`)
-    console.log(file)
     try {
-      const result = await uploadBytes(storageRef, file)
+      await uploadBytes(storageRef, file)
       const downloadURL = await getDownloadURL(storageRef)
-      console.log(result)
-      console.log(downloadURL)
       options.onSuccess?.(downloadURL, new XMLHttpRequest())
     } catch (e: unknown) {
-      console.log(e)
       options.onError?.(e as Error)
     }
   }
