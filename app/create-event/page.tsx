@@ -11,7 +11,7 @@ import {
   Form,
   Input,
   Layout,
-  message,
+  Modal,
   Upload,
 } from 'antd'
 import type { UploadChangeParam, UploadFile } from 'antd/es/upload/interface'
@@ -21,8 +21,6 @@ const { Content } = Layout
 const { TextArea } = Input
 
 export default function CreateEvent() {
-  const [messageApi] = message.useMessage()
-
   type FormValues = {
     name: string
     location_name: string
@@ -55,8 +53,7 @@ export default function CreateEvent() {
     }
     try {
       await addDoc(collection(firestore, 'events'), eventModel)
-      messageApi.open({
-        type: 'success',
+      Modal.success({
         content: 'Event created!',
       })
       form.resetFields()
@@ -66,9 +63,9 @@ export default function CreateEvent() {
   }
 
   const onFinishFailed = () => {
-    messageApi.open({
-      type: 'error',
-      content: 'Error creating event',
+    Modal.error({
+      title: 'Error creating event',
+      content: 'Sorry, an unexpected error occurred while creating the event.',
     })
   }
 
